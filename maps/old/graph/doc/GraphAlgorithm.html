@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="shift_jis" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja">
+<head>
+<title>GraphAlgorithm</title>
+<meta http-equiv="Content-type" content="text/html; charset=shift_jis" />
+</head>
+<body>
+<h1><a name="label-0" id="label-0">GraphAlgorithm モジュール</a></h1><!-- RDLabel: "GraphAlgorithm モジュール" -->
+<p>グラフのアルゴリズム集。</p>
+<p><a href="Graph.html">Graph</a> にインクルードされているので、
+以下のメソッドはグラフクラス(
+<a href="UndirectedHashGraph.html">UndirectedHashGraph</a>など)の
+メソッドとして呼び出せます。</p>
+<p>いきなり以下の説明を読むより、 <a href="simple_example.rb">simple_example.rb</a>
+を見た方が分かりやすいと思います。</p>
+<h2><a name="label-1" id="label-1">メソッド:</a></h2><!-- RDLabel: "メソッド:" -->
+<dl>
+<dt><a name="label-2" id="label-2"><code>depth_first_search(<var>params</var>)</code></a></dt><!-- RDLabel: "depth_first_search" -->
+<dd>
+<p>グラフに対して、深さ優先探索を行います。</p>
+<p>パラメータは全て、ハッシュ <var>params</var> に指定します。
+有効なパラメータを以下に示します。</p>
+<dl>
+<dt><a name="label-3" id="label-3"><code>params[:root]</code></a></dt><!-- RDLabel: "params[:root]" -->
+<dd>
+必須。探索を始める頂点を指定します。
+</dd>
+<dt><a name="label-4" id="label-4"><code>params[:target]</code></a></dt><!-- RDLabel: "params[:target]" -->
+<dd>
+省略可。この頂点にたどり着いたら、探索を終了します。
+</dd>
+<dt><a name="label-5" id="label-5"><code>params[:predecessor]</code></a></dt><!-- RDLabel: "params[:predecessor]" -->
+<dd>
+省略可。 Hash を指定すると、その Hash に
+「それぞれの頂点に到達する直前にどの頂点を通ったか」が記録されます。
+</dd>
+<dt><a name="label-6" id="label-6"><code>params[:vertex_number]</code></a></dt><!-- RDLabel: "params[:vertex_number]" -->
+<dd>
+省略可。 Hash を指定すると、その Hash に
+「それぞれの頂点に何番目に到達したか」が記録されます。
+</dd>
+<dt><a name="label-7" id="label-7"><code>params[:on_discover_vertex]</code></a></dt><!-- RDLabel: "params[:on_discover_vertex]" -->
+<dd>
+省略可。Proc か Method を指定すると、頂点 <code>v</code> に到達した時に、
+<code>params[:on_discover_vertex].call(v)</code> が実行されます。
+</dd>
+<dt><a name="label-8" id="label-8"><code>params[:on_tree_edge]</code></a></dt><!-- RDLabel: "params[:on_tree_edge]" -->
+<dd>
+省略可。Proc か Method を指定すると、頂点 <code>v</code> から
+頂点 <code>w</code> に進んだ時に、
+<code>params[:on_tree_edge].call(v, w)</code> が実行されます。
+</dd>
+<dt><a name="label-9" id="label-9"><code>params[:adjacent?]</code></a></dt><!-- RDLabel: "params[:adjacent?]" -->
+<dd>
+省略可。Proc か Method なら <code>params[:adjacent?].call(v, w)</code> 、
+それ以外なら <code>params[:adjacent?][[v, w]]</code> が呼ばれ、
+その戻り値が偽ならば、辺 <code>[v, w]</code> は「通行止め」になります。
+</dd>
+</dl>
+<p><code>params[:target]</code> が指定されていて、そこに到達できた場合は
+<code>true</code> を返します。</p></dd>
+<dt><a name="label-10" id="label-10"><code>breadth_first_search(<var>params</var>)</code></a></dt><!-- RDLabel: "breadth_first_search" -->
+<dd>
+<p>グラフに対して、幅優先探索を行います。</p>
+<p>パラメータは全て、ハッシュ <var>params</var> に指定します。
+有効なパラメータは <code>depth_first_search</code> と同じです。</p>
+<p><code>params[:target]</code> が指定されていて、そこに到達できた場合は
+<code>true</code> を返します。</p></dd>
+<dt><a name="label-11" id="label-11"><code>dijkstra_shortest_paths(<var>params</var>)</code></a></dt><!-- RDLabel: "dijkstra_shortest_paths" -->
+<dd>
+<p>グラフに対して、Dijkstraのアルゴリズムで最短経路を求めます。</p>
+<p>辺の長さ(重み)は全て 0 以上でなければなりません。</p>
+<p>パラメータは全て、ハッシュ <var>params</var> に指定します。
+有効なパラメータを以下に示します。</p>
+<dl>
+<dt><a name="label-12" id="label-12"><code>params[:root]</code></a></dt><!-- RDLabel: "params[:root]" -->
+<dd>
+必須。この頂点から各頂点への最短経路を求めます。
+</dd>
+<dt><a name="label-13" id="label-13"><code>params[:target]</code></a></dt><!-- RDLabel: "params[:target]" -->
+<dd>
+省略可。この頂点への最短距離が求まったら、探索を終了します。
+逆に言えば、探索が終了した時点で、指定された以外の頂点への
+最短経路は求まっていないかもしれません。
+<code>params[:target]</code> を省略した場合は、全ての頂点への最短経路が
+求まってから終了します。
+</dd>
+<dt><a name="label-14" id="label-14"><code>params[:predecessor]</code></a></dt><!-- RDLabel: "params[:predecessor]" -->
+<dd>
+省略可。 Hash を指定すると、その Hash に
+「それぞれの頂点に最短経路で行くには、直前にどの頂点を通ればいいか」
+が記録されます。
+</dd>
+<dt><a name="label-15" id="label-15"><code>params[:distance]</code></a></dt><!-- RDLabel: "params[:distance]" -->
+<dd>
+省略可。 Hash を指定すると、その Hash に
+「 <code>params[:root]</code> から各頂点への最短距離」が記録されます。
+</dd>
+<dt><a name="label-16" id="label-16"><code>params[:on_examine_vertex]</code></a></dt><!-- RDLabel: "params[:on_examine_vertex]" -->
+<dd>
+省略可。Proc か Method を指定すると、頂点 <code>v</code>
+を経由する経路の調査が始まる前に、
+<code>params[:on_examine_vertex].call(v)</code> が実行されます。
+</dd>
+<dt><a name="label-17" id="label-17"><code>params[:on_relax_edge]</code></a></dt><!-- RDLabel: "params[:on_relax_edge]" -->
+<dd>
+省略可。Proc か Method を指定すると、頂点 <code>w</code> に行く経路を、
+辺 <code>[v, w]</code> を経由する経路に変更した時に、
+<code>params[:on_relax_edge].call(v, w)</code> が実行されます。
+</dd>
+<dt><a name="label-18" id="label-18"><code>params[:adjacent?]</code></a></dt><!-- RDLabel: "params[:adjacent?]" -->
+<dd>
+省略可。Proc か Method なら <code>params[:adjacent?].call(v, w)</code> 、
+それ以外なら <code>params[:adjacent?][[v, w]]</code> が呼ばれ、
+その戻り値が偽ならば、辺 <code>[v, w]</code> は「通行止め」になります。
+</dd>
+<dt><a name="label-19" id="label-19"><code>params[:weight]</code></a></dt><!-- RDLabel: "params[:weight]" -->
+<dd>
+省略可。Proc か Method なら <code>params[:weight].call(v, w)</code> 、
+それ以外なら <code>params[:weight][[v, w]]</code> が呼ばれ、
+その戻り値を辺 <code>[v, w]</code> の長さ(重み)とみなします。
+省略した場合は、 <code>self[v, w]</code> が使われます。
+</dd>
+<dt><a name="label-20" id="label-20"><code>params[:zero]</code></a></dt><!-- RDLabel: "params[:zero]" -->
+<dd>
+省略可。「距離ゼロ」を表すオブジェクトです。
+省略すると <code>0</code> になります。ほとんどの場合はこれで問題無いでしょう。
+</dd>
+<dt><a name="label-21" id="label-21"><code>params[:infinity]</code></a></dt><!-- RDLabel: "params[:infinity]" -->
+<dd>
+省略可。「距離無限大」を表すオブジェクトです。
+省略すると <code>1.0/0.0</code> になります。ほとんどの場合はこれで問題無いでしょう。
+</dd>
+</dl>
+<p><code>params[:target]</code> が指定されていて、そこに到達できた場合は、
+<code>params[:root]</code> から <code>params[:target]</code> への最短距離を返します。</p>
+<p>それ以外の場合は、 <code>nil</code> を返します。</p></dd>
+<dt><a name="label-22" id="label-22"><code>warshall_floyd_shortest_paths(<var>params</var>)</code></a></dt><!-- RDLabel: "warshall_floyd_shortest_paths" -->
+<dd>
+<p>グラフに対して、Warshall Floydのアルゴリズムで最短経路を求めます。</p>
+<p>負の長さ(重み)を持つ辺があっても構いません。
+また、全頂点から全頂点への最短経路を一度に求めます。
+ただし、頂点数の3乗に比例して遅くなります。</p>
+<p>パラメータは全て、ハッシュ <var>params</var> に指定します。
+有効なパラメータを以下に示します。</p>
+<dl>
+<dt><a name="label-23" id="label-23"><code>params[:predecessor]</code></a></dt><!-- RDLabel: "params[:predecessor]" -->
+<dd>
+<p>省略可。 例えば頂点 <code>v</code> から頂点 <code>w</code> に行く最短経路が
+<code>[v, x, y, w]</code> だった場合、</p>
+<pre>params[:predecessor][[v, w]]= y
+params[:predecessor][[v, y]]= x
+params[:predecessor][[v, x]]= v</pre>
+<p>と記録されます。</p>
+</dd>
+<dt><a name="label-24" id="label-24"><code>params[:distance]</code></a></dt><!-- RDLabel: "params[:distance]" -->
+<dd>
+<p>省略可。 頂点 <code>v</code> から頂点 <code>w</code> への最短距離が <code>d</code>
+ならば、</p>
+<pre>params[:distance][[v, w]]= d</pre>
+<p>と記録されます。</p>
+</dd>
+<dt><a name="label-25" id="label-25"><code>params[:on_examine_edge]</code></a></dt><!-- RDLabel: "params[:on_examine_edge]" -->
+<dd>
+省略可。Proc か Method を指定すると、辺 <code>[v, w]</code>
+を経由する経路の調査が始まる前に、
+<code>params[:on_examine_edge].call(v, w)</code> が実行されます。
+</dd>
+<dt><a name="label-26" id="label-26"><code>params[:on_relax_edge]</code></a></dt><!-- RDLabel: "params[:on_relax_edge]" -->
+<dd>
+省略可。Proc か Method を指定すると、頂点 <code>v</code> から頂点 <code>w</code>
+に行く経路を、辺 <code>[x, w]</code> を経由する経路に変更した時に、
+<code>params[:on_relax_edge].call(v, w, x)</code> が実行されます。
+</dd>
+<dt><a name="label-27" id="label-27"><code>params[:adjacent?]</code></a></dt><!-- RDLabel: "params[:adjacent?]" -->
+<dd>
+省略可。Proc か Method なら <code>params[:adjacent?].call(v, w)</code> 、
+それ以外なら <code>params[:adjacent?][[v, w]]</code> が呼ばれ、
+その戻り値が偽ならば、辺 <code>[v, w]</code> は「通行止め」になります。
+</dd>
+<dt><a name="label-28" id="label-28"><code>params[:weight]</code></a></dt><!-- RDLabel: "params[:weight]" -->
+<dd>
+省略可。Proc か Method なら <code>params[:weight].call(v, w)</code> 、
+それ以外なら <code>params[:weight][[v, w]]</code> が呼ばれ、
+その戻り値を辺 <code>[v, w]</code> の長さ(重み)とみなします。
+省略した場合は、 <code>self[v, w]</code> が使われます。
+</dd>
+<dt><a name="label-29" id="label-29"><code>params[:zero]</code></a></dt><!-- RDLabel: "params[:zero]" -->
+<dd>
+省略可。「距離ゼロ」を表すオブジェクトです。
+省略すると <code>0</code> になります。ほとんどの場合はこれで問題無いでしょう。
+</dd>
+<dt><a name="label-30" id="label-30"><code>params[:infinity]</code></a></dt><!-- RDLabel: "params[:infinity]" -->
+<dd>
+省略可。「距離無限大」を表すオブジェクトです。
+省略すると <code>1.0/0.0</code> になります。ほとんどの場合はこれで問題無いでしょう。
+</dd>
+</dl>
+<p><code>nil</code> を返します。</p></dd>
+<dt><a name="label-31" id="label-31"><code>maximum_flow(<var>params</var>)</code></a></dt><!-- RDLabel: "maximum_flow" -->
+<dd>
+<p>辺の重みを辺の容量とみなし、ある頂点からある頂点まで、
+最大どれだけ流す事ができるかを求めます。</p>
+<p>パラメータは全て、ハッシュ <var>params</var> に指定します。
+有効なパラメータを以下に示します。</p>
+<dl>
+<dt><a name="label-32" id="label-32"><code>params[:source]</code></a></dt><!-- RDLabel: "params[:source]" -->
+<dd>
+必須。入口となる頂点(ソース)を指定します。
+</dd>
+<dt><a name="label-33" id="label-33"><code>params[:sink]</code></a></dt><!-- RDLabel: "params[:sink]" -->
+<dd>
+必須。出口となる頂点(シンク)を指定します。
+</dd>
+<dt><a name="label-34" id="label-34"><code>params[:flow]</code></a></dt><!-- RDLabel: "params[:flow]" -->
+<dd>
+省略可。 Hash を指定すると、その Hash に
+「それぞれの辺の流量」が記録されます。
+</dd>
+<dt><a name="label-35" id="label-35"><code>params[:rest]</code></a></dt><!-- RDLabel: "params[:rest]" -->
+<dd>
+省略可。 Hash を指定すると、その Hash に
+「それぞれの辺にあとどれだけ流せるか」が記録されます。
+</dd>
+<dt><a name="label-36" id="label-36"><code>params[:on_add_flow]</code></a></dt><!-- RDLabel: "params[:on_add_flow]" -->
+<dd>
+省略可。Proc か Method を指定すると、流量を <code>inc</code> だけ追加する時に、
+<code>params[:on_add_flow].call(route, inc)</code> が実行されます。
+<code>route</code> は流す経路を表します。例えば経路 <code>v</code> → <code>w</code> → <code>x</code>
+なら、 <code>route</code> は <code>[[v, w], [w, x]]</code> になります。
+</dd>
+<dt><a name="label-37" id="label-37"><code>params[:adjacent?]</code></a></dt><!-- RDLabel: "params[:adjacent?]" -->
+<dd>
+省略可。Proc か Method なら <code>params[:adjacent?].call(v, w)</code> 、
+それ以外なら <code>params[:adjacent?][[v, w]]</code> が呼ばれ、
+その戻り値が偽ならば、辺 <code>[v, w]</code> は「通行止め」になります。
+</dd>
+<dt><a name="label-38" id="label-38"><code>params[:weight]</code></a></dt><!-- RDLabel: "params[:weight]" -->
+<dd>
+省略可。Proc か Method なら <code>params[:weight].call(v, w)</code> 、
+それ以外なら <code>params[:weight][[v, w]]</code> が呼ばれ、
+その戻り値を辺 <code>[v, w]</code> の容量(重み)とみなします。
+省略した場合は、 <code>self[v, w]</code> が使われます。
+</dd>
+<dt><a name="label-39" id="label-39"><code>params[:zero]</code></a></dt><!-- RDLabel: "params[:zero]" -->
+<dd>
+省略可。「流量ゼロ」を表すオブジェクトです。
+省略すると <code>0</code> になります。ほとんどの場合はこれで問題無いでしょう。
+</dd>
+</dl>
+<p><code>params[:source]</code> から <code>params[:sink]</code>
+までに流す事ができる最大流量を返します。</p></dd>
+<dt><a name="label-40" id="label-40"><code>route(<var>target</var>, <var>predecessor</var>[, <var>mode</var>])</code></a></dt><!-- RDLabel: "route" -->
+<dd>
+<p><code>depth_first_search</code> 、 <code>breadth_first_search</code> 、 
+<code>djikstra_shortest_paths</code> 、 <code>warshall_floyd_shortest_paths</code>
+で <code>params[:predecessor]</code> に記録された情報を元に、頂点 <var>target</var>
+までの経路を求めて返します。</p>
+<p>ただし、 <code>warshall_floyd_shortest_paths</code> の場合は、 <var>target</var>
+に [始点, 終点] という配列を指定します。</p>
+<p><var>predecessor</var> には、 <code>params[:predecessor]</code> に指定した Hash
+を指定します。</p>
+<p><var>mode</var> に <code>:vertex</code> (デフォルト)を指定すると経路上の頂点を、
+<code>:edge</code> を指定すると経路上の辺を返します。</p></dd>
+<dt><a name="label-41" id="label-41"><code>graphviz_format(<var>params</var>)</code></a></dt><!-- RDLabel: "graphviz_format" -->
+<dd>
+<p>グラフを<a href="http://www.graphviz.org/">Graphviz</a>のDOT形式で出力します。
+このメソッドの出力を<a href="http://www.graphviz.org/">Graphviz</a>のdotコマンドに
+入力すると、グラフを視覚化できます。</p>
+<p>パラメータは全て、ハッシュ <var>params</var> に指定します。
+有効なパラメータを以下に示します。</p>
+<dl>
+<dt><a name="label-42" id="label-42"><code>params[:io]</code></a></dt><!-- RDLabel: "params[:io]" -->
+<dd>
+省略可。出力先の IO オブジェクト。
+</dd>
+<dt><a name="label-43" id="label-43"><code>params[:graph_id]</code></a></dt><!-- RDLabel: "params[:graph_id]" -->
+<dd>
+省略可。グラフのIDとして使われる文字列。
+</dd>
+<dt><a name="label-44" id="label-44"><code>params[:vertex_id]</code></a></dt><!-- RDLabel: "params[:vertex_id]" -->
+<dd>
+<p>省略可。 Proc か Method か Hash を指定。
+<code>params[:vertex_id][v]</code> が頂点 <code>v</code> のIDとして使われます。
+省略すると、 <code>v.to_s()</code> が使われます。</p>
+<p>IDに使える文字には制限が有ります。
+<a href="http://www.graphviz.org/cvs/doc/info/lang.html">The DOT Language</a>
+を参照してください。</p>
+</dd>
+<dt><a name="label-45" id="label-45"><code>params[:vertex_attribute]</code></a></dt><!-- RDLabel: "params[:vertex_attribute]" -->
+<dd>
+省略可。 Proc か Method か Hash を指定。
+<code>params[:vertex_attribute][v]</code> が頂点 <code>v</code>
+の属性を表す Hash として使われます。
+</dd>
+<dt><a name="label-46" id="label-46"><code>params[:edge_label]</code></a></dt><!-- RDLabel: "params[:edge_label]" -->
+<dd>
+省略可。 Proc か Method か Hash を指定。
+<code>params[:edge_label].call(v, w)</code> (Hashの場合は
+<code>params[:edge_label][[v, w]]</code> )が辺 <code>[v, w]</code>
+のラベルとして使われます。
+</dd>
+<dt><a name="label-47" id="label-47"><code>params[:edge_attribute]</code></a></dt><!-- RDLabel: "params[:edge_attribute]" -->
+<dd>
+省略可。 Proc か Method か Hash を指定。
+<code>params[:edge_attribute].call(v, w)</code> (Hashの場合は
+<code>params[:edge_attribute][[v, w]]</code> )が辺 <code>[v, w]</code>
+の属性を表す Hash として使われます。
+</dd>
+<dt><a name="label-48" id="label-48"><code>params[:extra]</code></a></dt><!-- RDLabel: "params[:extra]" -->
+<dd>
+<p>省略可。グラフの追加の属性などを指定します。この文字列は</p>
+<pre>(graph|digraph) [ID] '{'</pre>
+<p>の直後にそのまま出力されます。</p>
+</dd>
+</dl>
+<p><code>params[:io]</code> が指定された場合は <code>params[:io]</code>
+を、そうでなければ出力内容を文字列で返します。</p></dd>
+</dl>
+
+</body>
+</html>

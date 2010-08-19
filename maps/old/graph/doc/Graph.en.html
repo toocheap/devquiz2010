@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Graph.en</title>
+</head>
+<body>
+<h1><a name="label-0" id="label-0">Module Graph</a></h1><!-- RDLabel: "Module Graph" -->
+<p>A module defining basic operations for a graph.</p>
+<p>In order to make your own graph class, implement the following "Required methods"
+and include this module.</p>
+<h2><a name="label-1" id="label-1">Module included:</a></h2><!-- RDLabel: "Module included:" -->
+<ul>
+<li><a href="GraphAlgorithm.en.html">GraphAlgorithm</a></li>
+</ul>
+<h2><a name="label-2" id="label-2">Required methods:</a></h2><!-- RDLabel: "Required methods:" -->
+<dl>
+<dt><a name="label-3" id="label-3"><code>self[ <var>v</var>, <var>w</var> ]</code></a></dt><!-- RDLabel: "self[ v, w ]" -->
+<dd>
+<p>The weight of the edge between vertex <var>v</var> and vertex <var>w</var>.</p>
+<p>The "weight" is a value used as the length or capacity of the edge, by algorithms.</p>
+<p>If <var>v</var> and <var>w</var> are not adjacent, returns <code>parameter(:default)</code>
+(which defaults to <code>nil</code>).</p></dd>
+<dt><a name="label-4" id="label-4"><code>each_vertex{ |<var>v</var>| ... }</code></a></dt><!-- RDLabel: "each_vertex" -->
+<dd>
+Repeats for each vertex of the graph.</dd>
+<dt><a name="label-5" id="label-5"><code>directed?()</code></a></dt><!-- RDLabel: "directed?" -->
+<dd>
+<p>If the graph is directed, returns <code>true</code>.
+If the graph is undirected, returns <code>false</code>.</p>
+<p>An undirected graph is a graph which satisfies <code>self[v, w]==self[w, v]</code>
+for any vertices <code>v</code>, <code>w</code>.</p></dd>
+</dl>
+<h2><a name="label-6" id="label-6">Methods:</a></h2><!-- RDLabel: "Methods:" -->
+<dl>
+<dt><a name="label-7" id="label-7"><code>adjacent?(<var>v</var>, <var>w</var>)</code></a></dt><!-- RDLabel: "adjacent?" -->
+<dd>
+<p>Returns <code>true</code> if vertex <var>v</var> and vertex <var>w</var> is adjacent
+(i.e. edge <code>[v, w]</code> exists).</p>
+<p>This is judged by <code>self[v, w]!=parameter(:default)</code>.</p>
+<p><code>adjacent?(v, w)</code> and <code>adjacent?(w, v)</code> is not always equal,
+in case of directed graph.</p></dd>
+<dt><a name="label-8" id="label-8"><code>each_successing_vertex(<var>v</var>){ |<var>w</var>| ... }</code></a></dt><!-- RDLabel: "each_successing_vertex" -->
+<dd>
+Repeats for each target vertex of all edges whose source vertex is <var>v</var>.</dd>
+<dt><a name="label-9" id="label-9"><code>each_edge(<var>uniq</var>= <var>false</var>){ |<var>v</var>, <var>w</var>| ... }</code></a></dt><!-- RDLabel: "each_edge" -->
+<dd>
+<p>Repeats for each edge of the graph.</p>
+<p>Repeats individually for <code>v, w</code> and <code>w, v</code>, even if it's undirected graph.
+Set <var>uniq</var> to <code>true</code> in order to prevent this.</p>
+<p><var>uniq</var> is ignored for directed graph.</p></dd>
+<dt><a name="label-10" id="label-10"><code>out_degree(<var>v</var>)</code></a></dt><!-- RDLabel: "out_degree" -->
+<dd>
+Returns the out degree of vertex <var>v</var> (the number of edges whose source vertex is <var>v</var>).</dd>
+<dt><a name="label-11" id="label-11"><code>vertices</code></a></dt><!-- RDLabel: "vertices" -->
+<dd>
+Returns all vertices as Array.</dd>
+<dt><a name="label-12" id="label-12"><code>edges(<var>uniq</var>= <var>false</var>)</code></a></dt><!-- RDLabel: "edges" -->
+<dd>
+<p>Returns all edges as Array.</p>
+<p><var>uniq</var> works the same as that of <code>each_edge</code>.</p></dd>
+<dt><a name="label-13" id="label-13"><code>parameter(<var>name</var>)</code></a></dt><!-- RDLabel: "parameter" -->
+<dd>
+<p>Parameters of the graph. Used as the default value of the parameter for
+<a href="GraphAlgorithm.en.html">GraphAlgorithm</a> methods.</p>
+<p><code>parameter(:default)</code> is the return value of <code>self[v, w]</code>
+if <code>v</code> and <code>w</code> is not adjacent.</p>
+<p>This always returns <code>nil</code> by default. Reimplement this if needed.</p></dd>
+</dl>
+
+</body>
+</html>
