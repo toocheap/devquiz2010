@@ -2,16 +2,16 @@
 # 
 # devquiz maps API
 #
-require 'rubygems'
-require 'uri'
+#require 'rubygems'
 require 'net/http'
-require 'json'
+require 'uri'
 require 'pp'
+require 'simple-json'
 
 class GMapDirection
 
-    RESERVED_CHARACTERS = /[^a-zA-Z0-9\-\.\_\~]/
-        VERSION = '0.1'
+    RESERVED_CHARACTERS = %r![^a-zA-Z0-9\-\.\_\~]!
+    VERSION = '0.1'
     USER_AGENT = "TOOCHEAP_MAPS_DEVQUIZ_CLIENT/#{VERSION}"
 
     def initialize(from, to)
@@ -26,7 +26,10 @@ class GMapDirection
 
     def range
         responce = _request(:get, create_map_uri)
+=begin
         mdata = JSON.parse(responce.body.to_s)
+=end
+        mdata = JsonParser.new.parse(responce.body.to_s)
         unless mdata['status'] =~ /OK/ 
             puts "Error had occured: #{mdata['status']}"
             puts "URI:#{create_map_uri}"
@@ -79,4 +82,3 @@ from = "35.185590,136.899060"
 to = "35.686839,139.771438"
 gmd = GMapDirection.new(from, to)
 p gmd.range
-
