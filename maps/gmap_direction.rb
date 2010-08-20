@@ -1,8 +1,6 @@
-#!/usr/bin/env ruby
 # 
-# devquiz maps API
+# devquiz maps API library
 #
-#require 'rubygems'
 require 'net/http'
 require 'uri'
 require 'pp'
@@ -26,9 +24,6 @@ class GMapDirection
 
     def range
         responce = _request(:get, create_map_uri)
-=begin
-        mdata = JSON.parse(responce.body.to_s)
-=end
         mdata = JsonParser.new.parse(responce.body.to_s)
         unless mdata['status'] =~ /OK/ 
             puts "Error had occured: #{mdata['status']}"

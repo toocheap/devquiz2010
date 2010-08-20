@@ -1,6 +1,10 @@
 #!/usr/bin/env ruby
 # 
-# devquiz graph search / maps API
+# devquiz  maps API main
+#
+# usage: ruby dq_maps.rb 1.txt 100
+#  * 1.txt is "input1" as text. 1.txt must be in ./data
+#  * 100 is how many times repeat random_optimize. input3 must be +100,000.
 #
 require 'gmap_direction'
 require 'pp'
@@ -119,45 +123,6 @@ class DevquizMapSearch
         [bestpath, best]
     end
 
-=begin
-    def hillclimb_optimize
-        loop do
-            neighbors = []
-            sol = create_solution(0, @list.size)
-            count = @list.size
-            p "count:#{count}"
-            count.times do |i|
-                p "i:#{i}"
-                value = sol[i] 
-                if (value-1) > 0 then
-                    newsol = sol.dup
-                    newsol[i] = (value-1)
-                    neighbors.push newsol
-                end
-                if (value+1) < count then
-                    newsol = sol.dup
-                    newsol[i] = (value+1)
-                    neighbors.push newsol
-                end
-            end
-            pp neighbors
-            best = costf(sol)
-            bestpath = sol
-            neighbors.each do |ns|
-                score= costf(ns)
-                if score > best
-                    best = score
-                    bestpath = ns
-                end
-                puts if $DEBUG
-            end
-            break  if bestpath == sol
-        end
-        [bestpath, best]
-    end
-=end
-
-
     attr_reader :list, :names, :distances
 end
 
@@ -168,5 +133,3 @@ result[0].each do |i|
     print "#{dqm.names[i]} "
 end
 puts
-#pp dqm.hillclimb_optimize
-

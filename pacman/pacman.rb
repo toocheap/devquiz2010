@@ -62,6 +62,8 @@ TODO: Now all of enemys are :enemy.
             @width = @width.to_i
             @height = @height.to_i
             @maze = Array.new(@height)
+            @crosses = Array.new
+            @roads = Array.new
 
             h = 0
             mz = []
@@ -71,63 +73,6 @@ TODO: Now all of enemys are :enemy.
             end
             _parse_maze(mz)
         end
-    end
-
-    def out_of_range?(x, y)
-        puts "OOR:#{x},#{y}" if $DEBUG
-        if x < 0 or (x > @width)
-            puts "x is #{x} but width is #{@width}" if $DEBUG
-            return :x_oor
-        end
-        if y < 0 or (y > @height)
-            puts "y is #{y} but height is #{@height}" if $DEBUG
-            return :y_oor
-        end
-        false
-    end
-    alias oor? out_of_range?
-
-
-    def [](x, y)
-        @maze[y][x]
-    end
-
-    def wall?(x,y)
-        (@maze[y][x] == :wall)
-    end
-
-    def dot?(x,y)
-        @maze[y][x] == :dot
-    end
-    
-    def eated?(x,y)
-        @maze[y][x] == :eated
-    end
-
-    def enemy?(x,y)
-        @objects.each do |o|
-            ox, oy = o.pos
-            if ox == x && oy == y then
-                return true
-            end
-        end
-        false
-    end
-
-    def cango?(now, vec)
-        ox, oy = now
-        vx, vy = vec
-        gx = ox + vx
-        gy = oy + vy
-
-        # Range check
-        return false if out_of_range?(gx, gy)
-        # Wall
-        return false if wall?(gx, gy)
-        # Enemy is there?
-        return falase if enemy?(gx, gy)
-        # Otherwise
-        return true
     end
 
     def showmaze
@@ -195,7 +140,139 @@ TODO: Now all of enemys are :enemy.
         end
     end
 
-    attr_reader :time, :maze, :width, :height
+    def walk(&block)
+        @height.times do |y|
+            @width.times do |x|
+#                puts "WALKING(#{y},#{x}) ==========>" if $DEBUG
+                block.call(x,y)
+            end
+        end
+    end
+
+
+    def out_of_range?(x, y)
+#        puts "OOR:#{x},#{y}" if $DEBUG
+        if x < 0 or (x >= @width)
+#            puts "x is #{x} but width is #{@width}" if $DEBUG
+            return :x_oor
+        end
+        if y < 0 or (y >= @height)
+#            puts "y is #{y} but height is #{@height}" if $DEBUG
+            return :y_oor
+        end
+        false
+    end
+    alias oor? out_of_range?
+
+    def cell(x, y)
+        @maze[y][x]
+    end
+
+    def is(x,y)
+#        puts "IS?:#{x},#{y}" if $DEBUG
+        return nil if oor?(x,y)
+        cell(x,y)
+    end
+
+    def wall?(x,y)
+        # Out of range is as same as wall.
+        if oor?(x,y)
+            return false
+        end
+        # check the cell is wall or not
+#        puts "WALL?:#{x},#{y}=#{is(x,y)}" if $DEBUG
+        if is(x,y) == :wall
+            return :wall
+        end
+        false
+    end
+
+    def dot?(x,y)
+        is(x,y) == :dot
+    end
+    
+    def eated?(x,y)
+        is(x,y) == :eated
+    end
+
+    def enemy?(x,y)
+        @objects.each do |o|
+            ox, oy = o.pos
+            if ox == x && oy == y then
+                return true
+            end
+        end
+        false
+    end
+
+    def cango?(now, vec)
+        ox, oy = now
+        vx, vy = vec
+        gx = ox + vx
+        gy = oy + vy
+
+        # Range check
+        return false if out_of_range?(ox, oy)
+        return false if out_of_range?(gx, gy)
+        # Wall
+        return false if wall?(gx, gy)
+        # Enemy is there?
+        return false if enemy?(gx, gy)
+        # Otherwise
+        return true
+    end
+
+    def ways(pos)
+        x, y = pos
+        if oor?(x, y)
+            return nil
+        else
+            return [
+                cango?([x,y],[ 0,-1]),  # UP
+                cango?([x,y],[ 0, 1]),  # DOWN
+                cango?([x,y],[-1, 0]),  # LEFT
+                cango?([x,y],[ 1, 0])   # RIGHT
+            ]
+        end
+    end
+
+    def _number_of_ways(numways, pos)
+        return nil unless dot?(pos[0], pos[1])
+        around = ways(pos)
+        return false if around.nil?
+        count = 0
+        around.map {|p| count+=1 if p}
+        count >= numways ? around : nil
+    end
+
+    def cross?(pos)
+        _number_of_ways(3, pos)
+    end
+    def road?(pos)
+        _number_of_ways(2, pos)
+    end
+
+    def parse_crosses
+        walk {|x,y|
+            a = cross?([x,y])
+            if a then
+#                print "CROSS(#{x},#{y},#{is(x,y)})" ; pp a
+                @crosses.push [x,y]
+            end
+        }
+    end
+
+    def parse_roads
+        walk {|x,y|
+            a = road?([x,y])
+            if a then
+#                print "ROAD(#{x},#{y},#{is(x,y)})" ; pp a
+                @roads.push [x,y]
+            end
+        }
+    end
+
+    attr_reader :time, :maze, :width, :height, :crosses, :roads
 end
 
 #__END__
@@ -204,14 +281,15 @@ mz.showmaze
 
 #pp mz.wall?(0,0)
 #pp mz.wall?(1,1)
+=begin
+pp mz.oor?(mz.height+1,mz.width+1)
 pp mz.oor?(mz.height,mz.width)
-pp mz.oor?(mz.height-1,mz.width-1)
-pp mz.oor?(mz.height-2,mz.width-2)
-#pp mz.oor?(-1,0)
-#pp mz.oor?(0,-1)
-#pp mz.oor?(0,0)
-#pp mz.oor?(1,1)
-#pp mz.dot?(1,1)
+pp mz.oor?(-1,0)
+pp mz.oor?(0,-1)
+pp mz.oor?(0,0)
+pp mz.oor?(1,1)
+pp mz.dot?(1,1)
+=end
 #pp mz.dot?(0,0)
 #pp mz.eated?(1,1)
 #pp mz.eated?(0,0)
@@ -219,4 +297,24 @@ pp mz.oor?(mz.height-2,mz.width-2)
 #pp mz.enemy?(8,1)
 #pp mz.enemy?(1,3)
 #pp mz.enemy?(5,5)
+=begin
+pp mz[0,0]
+pp mz.cango?([0,0],[0,1])
+pp mz[1,1]
+pp mz.cango?([1,1],[0,-1]) # UP
+pp mz.cango?([1,1],[0,1])  # DOWN
+pp mz.cango?([1,1],[-1,0]) # LEFT
+pp mz.cango?([1,1],[1,0])  # RIGHT
+pp mz.ways([1,1])
+pp mz.ways([5,2])
+pp mz.ways([5,5])
+pp mz.ways([100,5])
+pp mz.ways([1,110])
+=end
+mz.parse_crosses
+puts "crosses:#{mz.crosses.size}"
+mz.parse_roads
+puts  "roads:#{mz.roads.size}"
+pp mz
 #mz.go(['h', 'j', 'k', 'l'])
+
