@@ -66,6 +66,8 @@ TODO: Now all of enemys are :enemy.
       @maze = Array.new(@height)
       @crosses = Array.new
       @roads = Array.new
+      @deadends = Array.new
+
 
       h = 0
       mz = []
@@ -118,16 +120,22 @@ TODO: Now all of enemys are :enemy.
         when '.'
           @maze[y][x] = :dot
         when '@'
+          @maze[y][x] = :dot
           @objects.push PacMan.new(x, y, '@')
         when 'V'
+          @maze[y][x] = :eated
           @objects.push Enemy.new(x, y, 'V')
         when 'H'
+          @maze[y][x] = :eated
           @objects.push Enemy.new(x, y, 'H')
         when 'L'
+          @maze[y][x] = :eated
           @objects.push Enemy.new(x, y, 'L')
         when 'R'
+          @maze[y][x] = :eated
           @objects.push Enemy.new(x, y, 'R')
         when 'J'
+          @maze[y][x] = :eated
           @objects.push Enemy.new(x, y, 'J')
         else
           raise
@@ -247,6 +255,9 @@ TODO: Now all of enemys are :enemy.
   def road?(pos)
     _number_of_ways(2, pos)
   end
+  def deadend?(pos)
+    _number_of_ways(1, pos)
+  end
 
   def parse_crosses
     walk {|x,y|
@@ -268,7 +279,17 @@ TODO: Now all of enemys are :enemy.
     }
   end
 
-  attr_reader :time, :maze, :width, :height, :crosses, :roads
+  # mmm, initial enamies position should be considerd...
+  def parse_deadends
+    walk {|x,y|
+      a = deadend?([x,y])
+      if a then
+#        print "DEADEND(#{x},#{y},#{is(x,y)})" ; pp a
+        @deadends.push [x,y]
+      end
+    }
+  end
+  attr_reader :time, :maze, :width, :height, :crosses, :roads, :deadends
 end
 
 #__END__
@@ -311,6 +332,8 @@ mz.parse_crosses
 puts "crosses:#{mz.crosses.size}"
 mz.parse_roads
 puts  "roads:#{mz.roads.size}"
+mz.parse_deadends
+puts  "deadends:#{mz.deadends.size}"
 #pp mz
 #mz.go(['h', 'j', 'k', 'l'])
 
