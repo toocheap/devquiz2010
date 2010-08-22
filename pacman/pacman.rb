@@ -76,6 +76,9 @@ TODO: Now all of enemys are :enemy.
         h+=1
       end
       _parse_maze(mz)
+      _parse_crosses
+      _parse_roads
+      _parse_deadends
     end
   end
 
@@ -104,6 +107,7 @@ TODO: Now all of enemys are :enemy.
       end
       puts
     end
+    puts "crosses:#{@crosses.size} roads:#{@roads.size} deadends:#{@deadends.size}"
   end
 
   def _parse_maze(maze)
@@ -209,21 +213,31 @@ TODO: Now all of enemys are :enemy.
     false
   end
 
+  def _dir(vec)
+    return 0 if vec == [ 0, -1]
+    return 1 if vec == [ 0, 1]
+    return 2 if vec == [-1, 0]
+    return 3 if vec == [ 1, 0]
+    return -1 if vec == [ 0, 0]
+    raise
+  end
+
   def cango?(now, vec)
     ox, oy = now
     vx, vy = vec
     gx = ox + vx
     gy = oy + vy
+    # Otherwise
+    cango = true
 
     # Range check
-    return false if out_of_range?(ox, oy)
-    return false if out_of_range?(gx, gy)
+    cango = false if out_of_range?(ox, oy)
+    cango = false if out_of_range?(gx, gy)
     # Wall
-    return false if wall?(gx, gy)
+    cango = false if wall?(gx, gy)
     # Enemy is there?
-    return false if enemy?(gx, gy)
-    # Otherwise
-    return true
+    cango = false if enemy?(gx, gy)
+    cango
   end
 
   def ways(pos)
@@ -259,7 +273,7 @@ TODO: Now all of enemys are :enemy.
     _number_of_ways(1, pos)
   end
 
-  def parse_crosses
+  def _parse_crosses
     walk {|x,y|
       a = cross?([x,y])
       if a then
@@ -269,7 +283,7 @@ TODO: Now all of enemys are :enemy.
     }
   end
 
-  def parse_roads
+  def _parse_roads
     walk {|x,y|
       a = road?([x,y])
       if a then
@@ -280,7 +294,7 @@ TODO: Now all of enemys are :enemy.
   end
 
   # mmm, initial enamies position should be considerd...
-  def parse_deadends
+  def _parse_deadends
     walk {|x,y|
       a = deadend?([x,y])
       if a then
@@ -289,7 +303,7 @@ TODO: Now all of enemys are :enemy.
       end
     }
   end
-  attr_reader :time, :maze, :width, :height, :crosses, :roads, :deadends
+  attr_reader :time, :maze, :width, :height, :crosses, :roads, :deadends, :cango
 end
 
 #__END__
@@ -328,12 +342,7 @@ pp mz.ways([5,5])
 pp mz.ways([100,5])
 pp mz.ways([1,110])
 =end
-mz.parse_crosses
-puts "crosses:#{mz.crosses.size}"
-mz.parse_roads
-puts  "roads:#{mz.roads.size}"
-mz.parse_deadends
-puts  "deadends:#{mz.deadends.size}"
+
 #pp mz
 #mz.go(['h', 'j', 'k', 'l'])
 
